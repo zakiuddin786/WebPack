@@ -68,9 +68,13 @@ module.exports = {
             description: "This is spidy way"
         }),
         new ModuleFederationPlugin({
-            name: "SpiderMan",
+            name: "SpiderManApp",
+            filename: "remoteEntry.js",
             remotes:{
                 HelloWorldApp: "HelloWorldApp@http://localhost:9001/remoteEntry.js"
+            },
+            exposes: {
+                "./SpidermanPage": "./src/components/spiderman-page/spiderman-page.js"
             }
         })
     ]

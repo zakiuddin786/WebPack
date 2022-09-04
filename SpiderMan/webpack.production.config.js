@@ -11,7 +11,7 @@ module.exports = {
     output: {
         filename: '[name].[contenthash].js',
         path: path.resolve(__dirname,'./dist'),
-        publicPath: "/static/"
+        publicPath: "http://localhost:9002/"
         //  need to provide the url where we deploy our application
     },
     mode: 'production',
@@ -71,9 +71,13 @@ module.exports = {
             description: "This is spidy way"
         }),
         new ModuleFederationPlugin({
-            name: "SpiderMan",
+            name: "SpiderManApp",
+            filename: "remoteEntry.js",
             remotes:{
                 HelloWorldApp: "HelloWorldApp@http://localhost:9001/remoteEntry.js"
+            },
+            exposes: {
+                "./SpidermanPage": "./src/components/spiderman-page/spiderman-page.js"
             }
         })
     ]

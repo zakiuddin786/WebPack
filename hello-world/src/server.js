@@ -13,6 +13,6 @@ app.get("/",(req,res)=>{
 
 app.use("/",express.static(path.resolve(__dirname,"../dist")))
 
-app.listen(3001,()=>{
-    console.log(`Application running at http://localhost:3001/`)
+app.listen(9001,()=>{
+    console.log(`Application running at http://localhost:9001/`)
 })

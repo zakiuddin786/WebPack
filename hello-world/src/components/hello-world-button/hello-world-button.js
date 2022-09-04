@@ -5,7 +5,7 @@ class helloWorldButton {
 
     render(){
         const button = document.createElement("button");
-        button.innerHTML = "Hello Worlld";
+        button.innerHTML = "Hello World";
         button.classList.add("hello-world-button")
         const body = document.querySelector("body");
 

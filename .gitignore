@@ -9,6 +9,8 @@
 # Node
 hello-world/node_modules
 SpiderMan/node_modules
+dashboard/node_modules
+
 
 npm-debug.log
 yarn-error.log
