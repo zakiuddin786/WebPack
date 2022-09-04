@@ -1,25 +1,26 @@
 const path = require('path');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
+const { ModuleFederationPlugin } = require("webpack").container
 
 module.exports = {
     entry: {
-        "hello-world": "./src/hello-world.js",
         "spiderman": "./src/spiderman.js"
     },
     output: {
-        filename: '[name].bundle.js',
+        filename: '[name].[contenthash].js',
         path: path.resolve(__dirname,'./dist'),
-        // publicPath: "dist/" need to provide the url where we deploy our application
+        publicPath: "/static/"
+        //  need to provide the url where we deploy our application
     },
-    mode: 'development',
-    devServer: {
-        port: 9000,
-        static: path.resolve(__dirname,'./dist'),
-        devMiddleware: {
-            writeToDisk: true,
-            index: "index.html",
-        },
+    mode: 'production',
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+            minSize: 10000,
+            automaticNameDelimiter: "_"
+        }
     },
     module: {
         rules: [
@@ -30,15 +31,9 @@ module.exports = {
                 ]
             },
             {
-                test: /\.css$/,
-                use: [
-                    "style-loader", "css-loader"
-                ]
-            },
-            {
                 test: /\.scss$/,
                 use: [
-                    "style-loader", "css-loader", 'sass-loader'
+                    MiniCssExtractPlugin.loader, "css-loader", 'sass-loader'
                 ]
             },
             {
@@ -48,7 +43,6 @@ module.exports = {
                     loader: 'babel-loader',
                     options: {
                         presets: ["@babel/env"],
-                        plugins: ['transform-class-properties']
                     }
                 }
             },
@@ -61,6 +55,9 @@ module.exports = {
         ]
     },
     plugins: [
+        new MiniCssExtractPlugin({
+            filename: "[name].[contenthash].css",
+        }),
         new CleanWebpackPlugin({
             cleanOnceBeforeBuildPatterns: [
                 '**/*',
@@ -68,18 +65,16 @@ module.exports = {
             ]
         }),
         new HtmlWebpackPlugin({
-            filename: "hello-world.html",
-            chunks: ["hello-world"],
-            title:'Hello World',
-            template: 'src/page-template.hbs',
-            description: "Some Description"
-        }),
-        new HtmlWebpackPlugin({
             filename: "spiderman.html",
-            chunks: ["spiderman"],
             title:'Spidy',
             template: 'src/page-template.hbs',
             description: "This is spidy way"
+        }),
+        new ModuleFederationPlugin({
+            name: "SpiderMan",
+            remotes:{
+                HelloWorldApp: "HelloWorldApp@http://localhost:9001/remoteEntry.js"
+            }
         })
     ]
 }

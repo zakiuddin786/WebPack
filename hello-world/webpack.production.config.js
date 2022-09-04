@@ -2,16 +2,17 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
+const { ModuleFederationPlugin } = require("webpack").container;
 
 module.exports = {
     entry: {
         "hello-world": "./src/hello-world.js",
-        "spiderman": "./src/spiderman.js"
     },
     output: {
         filename: '[name].[contenthash].js',
         path: path.resolve(__dirname,'./dist'),
-        // publicPath: "dist/" need to provide the url where we deploy our application
+        publicPath: "http://localhost:9001"
+        //  need to provide the url where we deploy our application
     },
     mode: 'production',
     optimization: {
@@ -23,18 +24,6 @@ module.exports = {
     },
     module: {
         rules: [
-            {
-                test: /\.(png|jpg|jpeg)$/,
-                use: [
-                    "file-loader"
-                ]
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    MiniCssExtractPlugin.loader, "css-loader"
-                ]
-            },
             {
                 test: /\.scss$/,
                 use: [
@@ -72,17 +61,16 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             filename: "hello-world.html",
-            chunks: ["hello-world", "vendors~hello-world~spiderman"],
             title:'Hello World',
             template: 'src/page-template.hbs',
             description: "Some Description"
         }),
-        new HtmlWebpackPlugin({
-            filename: "spiderman.html",
-            chunks: ["spiderman", "vendors~hello-world~spiderman"],
-            title:'Spidy',
-            template: 'src/page-template.hbs',
-            description: "This is spidy way"
+        new ModuleFederationPlugin({
+            name: "HelloWorldApp",
+            filename: "remoteEntry.js",
+            exposes: {
+                "./HelloWorldButton" : "./src/components/hello-world-button/hello-world-button.js"
+            }
         })
     ]
 }
